@@ -1,51 +1,61 @@
 import pygame
+
+# Initialize Pygame
 pygame.init()
 
-WIDTH=800
-HEIGHT=600
-dimensoes=(WIDTH,HEIGHT)
-screen = pygame.display.set_mode(dimensoes) 
-#screen = pygame.display.set_mode((800,600)) 
+# Set up display
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption('Character Move Example')
 
-def camada_fundo(val):
-   cor=(200,150,125)
-   rect1=(val, 200, 1760, 560) 
-   pygame.draw.ellipse(screen,cor, rect1)
-   rect2=(val-1500, 200, 1760, 560)    
-   pygame.draw.ellipse(screen,cor, rect2)   
+# Set up clock
+clock = pygame.time.Clock()
+FPS = 60
 
-def arvore(x,y,r):
-   pygame.draw.rect(screen,(255,255,0), (x-r/4,y+r/2, r/2, r*2))
-   pygame.draw.circle(screen,(0,255,0), (x,y),r)
+# Set up character
+character = pygame.Rect(50, screen_height // 2 - 25, 50, 50)  # x, y, width, height
+character_speed = 200  # Pixels per second
 
-def camada_arvores(val):
-     arvore(val,400,40)
-     arvore(val+50,400,30)
-     arvore(val+100,425,20)
-     arvore(val-200,425,20)
-     arvore(val-550,425,10)
-     arvore(val-1550,425,10)
+# Colors
+WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
 
-def camada_estatica():
-   pygame.draw.rect(screen,(255,125,0), (0, 0, 100, HEIGHT))
-   pygame.draw.rect(screen,(255,125,0), (WIDTH-100, 0, 100, HEIGHT))
-   pygame.draw.rect(screen,(255,125,0), (0, 0, WIDTH, 100))
-   pygame.draw.rect(screen,(255,125,0), (0, HEIGHT-100, WIDTH, 100))
-   
+# Main loop
+running = True
+x1=10
+y1=20
+x2=120
+y2=120
+elapsedTime=0
+while running:
+    # Event handling
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-desistir=False
-x_arvores=0
-x_fundo=-200
-while(desistir==False):
-   for event in pygame.event.get():
-       if event.type==pygame.QUIT:
-          desistir=True
-   screen.fill((100,100,250))
-   
-   x_fundo=x_fundo+0.1
-   camada_fundo(x_fundo)
-   x_arvores=x_arvores+0.5
-   camada_arvores(x_arvores)
-   camada_estatica()
-   pygame.display.update() 
+    # Get deltaTime (time since last frame) in seconds
+    deltaTime = clock.tick(FPS) / 1000  # Converts milliseconds to seconds
+    elapsedTime+=deltaTime
+    # Update character position
+    character.x += character_speed * deltaTime
+    
+    x = x1 + elapsedTime * (x2 - x1) 
+    y = y1 + elapsedTime * (y2 - y1)
+    pygame.draw.circle(screen, (255,0,0), (x,y),2)
+
+    # Check if character has moved off the screen
+    if character.x > screen_width:
+        character.x = 0 - character.width  # Reset to the left side
+
+    # Fill the screen with white
+    #screen.fill(WHITE)
+
+    # Draw the character (as a blue rectangle)
+    pygame.draw.rect(screen, BLUE, character)
+
+    # Update the display
+    pygame.display.update()
+
+# Quit Pygame
 pygame.quit()
